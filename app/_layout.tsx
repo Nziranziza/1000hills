@@ -5,6 +5,9 @@ import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
+import Colors, { grayColor } from '../constants/Colors';
+
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -12,7 +15,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: '(auth)',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -20,7 +23,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Montserrat: require('../assets/fonts/Montserrat-VariableFont_wght.ttf'),
     ...FontAwesome.font,
   });
 
@@ -45,11 +48,37 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const { dark, light } = Colors;
+  const customDarkTheme = {
+    ...DarkTheme,
+    dark: false,
+    colors: {
+      ...DarkTheme.colors,
+      background: dark.background,
+      card: dark.background,
+      border: grayColor,
+      primary: dark.tint,
+      text: dark.text,
+    },
+  };
+  const lightTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: light.background,
+      card: light.background,
+      border: grayColor,
+      primary: light.tint,
+      text: light.text,
+    },
+  };
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+    <ThemeProvider value={colorScheme === 'dark' ? customDarkTheme : lightTheme}>
+      <Stack initialRouteName='(auth)' screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
   );
