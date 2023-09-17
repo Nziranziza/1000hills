@@ -1,46 +1,78 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import {
+  Platform,
+  StyleSheet,
+  FlatList,
+  View,
+  KeyboardAvoidingView,
+} from "react-native";
+import { useState } from "react";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
+import Input from "../../components/textInput";
+import Layout from "../../components/layout";
+import Button from "../../components/button";
+import MediaUploader from "../../components/mediaUploader";
 
-import Input from '../../components/textInput';
-import Layout from '../../components/layout';
-import Button from '../../components/button'
-import Icon from '../../components/icons';
-import { darkGrayColor, grayColor, whiteColor } from '../../constants/Colors';
-import { View, Text } from '../../components/Themed';
+const isOS = Platform.OS === "ios";
 
 export default function ModalScreen() {
+  const [upload, setUpload] = useState(false);
+
+  const onUpload = (assets: any[]) => {
+    console.log(assets);
+  };
+
   return (
-    <Layout style={styles.container}>
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-      <Input placeholder='Title' style={styles.input} />
-      <Input placeholder='Description' multiline numberOfLines={10} style={styles.input} />
-      <View>
-        <Text>Add an image or video</Text>
-        <Button title={<Icon name="upload" color={grayColor} size={65} />} style={styles.upload} />
-      </View>
-      <Button title="Create" style={styles.saveBtn} />
+    <Layout noScroll style={styles.container}>
+      <StatusBar style={isOS ? "light" : "auto"} />
+      <FlatList
+        data={[]}
+        style={styles.list}
+        renderItem={() => <View />}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          <KeyboardAvoidingView
+            behavior={isOS ? "padding" : "height"}
+            style={styles.input}
+          >
+            <Input label="Title" placeholder="Title" style={styles.input} />
+            <Input
+              placeholder="Description"
+              multiline
+              numberOfLines={10}
+              style={styles.input}
+              label="Description"
+            />
+            <MediaUploader
+              onChange={onUpload}
+              upload={upload}
+              title="Add an image or video"
+            />
+            <Button
+              title="Create"
+              style={styles.saveBtn}
+              onPress={() => setUpload(true)}
+            />
+          </KeyboardAvoidingView>
+        }
+      />
     </Layout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    justifyContent: 'center'
+  container: {
+    justifyContent: "center",
   },
   input: {
-    marginBottom: 30
+    marginBottom: 30,
   },
   saveBtn: {
-    marginTop: 60
+    marginTop: 60,
   },
-  upload: {
-    height: 150,
-    justifyContent: 'center',
-    backgroundColor: whiteColor,
-    marginTop: 10,
-    borderStyle: 'dashed',
-    borderColor: darkGrayColor,
-    borderWidth: 1
+  list: {
+    flex: 1, 
+    height: hp("100%")
   }
 });

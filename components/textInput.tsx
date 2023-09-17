@@ -1,5 +1,11 @@
-import { TextInput, TextInputProps, StyleSheet, ViewStyle } from "react-native";
-import { useState } from "react";
+import {
+  TextInput,
+  TextInputProps,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
+import { useState, useMemo } from "react";
 import { View } from "react-native";
 
 import {
@@ -13,6 +19,7 @@ import { Text } from "./Themed";
 export type InputProps = TextInputProps & {
   error?: string;
   containerStyle?: ViewStyle;
+  label?: string;
 };
 
 export default function Input({
@@ -21,11 +28,12 @@ export default function Input({
   onBlur = () => {},
   error = "",
   containerStyle,
+  label,
+  multiline,
+  numberOfLines,
   ...props
 }: InputProps) {
   const [isFocused, setFocus] = useState<Boolean>(false);
-  let _styles = styles.input;
-
   const onFocusHandler: typeof onFocus = (e) => {
     setFocus(true);
     onFocus(e);
@@ -36,26 +44,42 @@ export default function Input({
     onBlur(e);
   };
 
-  if (isFocused) {
-    _styles = {
-      ..._styles,
-      borderColor: textColor,
-    };
-  }
+  const _styles = useMemo(() => {
+    let style: TextStyle = styles.input;
+    if (isFocused) {
+      style = {
+        ...style,
+        borderColor: textColor,
+      };
+    }
 
-  if (error) {
-    _styles = {
-      ..._styles,
-      borderColor: secondaryColor,
-    };
-  }
+    if (error) {
+      style = {
+        ...style,
+        borderColor: secondaryColor,
+      };
+    }
+
+    if (multiline) {
+      style = {
+        ...style,
+        minHeight: numberOfLines ? numberOfLines * 16 : style.minHeight,
+        textAlignVertical: "top",
+        paddingTop: 10,
+      };
+    }
+    return style;
+  }, [isFocused, error, multiline]);
 
   return (
-    <View  style={containerStyle}>
+    <View style={containerStyle}>
+      {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
         style={[_styles, style]}
         onFocus={onFocusHandler}
         onBlur={onBlurHandler}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
         {...props}
       />
       {Boolean(error) && <Text style={styles.error}>{error}</Text>}
@@ -76,5 +100,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 5,
     color: secondaryColor,
+  },
+  label: {
+    fontWeight: "600",
+    marginBottom: 5,
   },
 });

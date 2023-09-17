@@ -11,6 +11,8 @@ import phone from "./xml/phone";
 import mail from "./xml/mail";
 import plus from "./xml/plus";
 import upload from "./xml/upload";
+import x from './xml/x';
+import refresh from "./xml/refresh";
 
 const icons = {
   home,
@@ -25,7 +27,9 @@ const icons = {
   phone,
   mail,
   plus,
-  upload
+  upload,
+  x,
+  refresh
 };
 
 export type IconNames = keyof typeof icons;

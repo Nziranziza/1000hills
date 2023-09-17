@@ -1,10 +1,15 @@
 import { ReactNode } from "react";
-import { ScrollView, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 
 export type LayoutProps = {
   children: ReactNode;
   noScroll?: boolean;
-  style?: ViewStyle
+  style?: ViewStyle;
 };
 
 export default function Layout({ children, noScroll, style }: LayoutProps) {
@@ -12,7 +17,10 @@ export default function Layout({ children, noScroll, style }: LayoutProps) {
     return <View style={[styles.container, style]}>{children}</View>;
   }
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.container, style]}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={[styles.container, style]}
+    >
       {children}
     </ScrollView>
   );
