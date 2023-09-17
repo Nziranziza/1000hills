@@ -55,9 +55,10 @@ export default function Home() {
   return (
     <Layout noScroll>
       <FlatList
+        key={samples.length}
         data={samples}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={({
           item: { title, location, description, likes, date },
         }) => (

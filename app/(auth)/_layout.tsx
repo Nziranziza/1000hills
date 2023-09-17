@@ -31,7 +31,7 @@ export function Layout({ title, children, description }: LayoutProps) {
               `}
         />
       </View>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Icon name="logo" size={40} style={styles.logo} />
         <Text style={styles.title}>{title}</Text>
         <Text>{description}</Text>
