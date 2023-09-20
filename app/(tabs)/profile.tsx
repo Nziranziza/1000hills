@@ -1,14 +1,25 @@
 import { StyleSheet, Image } from "react-native";
+import { useRouter } from "expo-router";
 
 import { Text, View } from "../../components/Themed";
 import Layout from "../../components/layout";
-import { backgroundColor, grayColor, secondaryColor } from "../../constants/Colors";
+import { grayColor, secondaryColor } from "../../constants/Colors";
 import { faker } from "@faker-js/faker";
 import Link from "../../components/link";
 import Icon from "../../components/icons";
 import Button from "../../components/button";
+import { removeToken } from "../../utilities/token";
 
-export default function Search() {
+export default function Profile() {
+  const router = useRouter()
+
+  const onLogout = async () => {
+    try {
+      await removeToken()
+      router.push("/(auth)")
+    } catch(error) {
+    }
+  }
   return (
     <Layout>
       <Text style={styles.title}>Profile</Text>
@@ -46,7 +57,7 @@ export default function Search() {
         </View>
       </View>
       <View style={{ flex: 1 }} />
-      <Button style={styles.logout} title="Logout " />
+      <Button onPress={onLogout} style={styles.logout} title="Logout " />
     </Layout>
   );
 }
