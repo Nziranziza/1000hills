@@ -1,33 +1,68 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-
-import Colors, { grayColor } from '../constants/Colors';
-
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { SplashScreen, Stack } from "expo-router";
+import { useEffect } from "react";
+import { useColorScheme } from "react-native";
+import { Provider as AtomProvider } from "jotai";
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from "expo-router";
+
+import Colors, { grayColor, primaryColor, secondaryColor, whiteColor } from "../constants/Colors";
+
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(auth)',
+  initialRouteName: "(auth)",
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const toastConfig = {
+  success: (props: any) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: primaryColor, backgroundColor: primaryColor }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        color: whiteColor,
+        fontSize: 18
+      }}
+      text2Style={{
+        color: whiteColor,
+        fontSize: 14
+      }}
+    />
+  ),
+  error: (props: any) => (
+    <ErrorToast
+      {...props}
+      style={{ borderLeftColor: secondaryColor, backgroundColor: secondaryColor }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        color: whiteColor,
+        fontSize: 18
+      }}
+      text2Style={{
+        color: whiteColor,
+        fontSize: 14
+      }}
+    />
+  ),
+};
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Montserrat: require('../assets/fonts/Montserrat-VariableFont_wght.ttf'),
+    Montserrat: require("../assets/fonts/Montserrat-VariableFont_wght.ttf"),
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -74,12 +109,17 @@ function RootLayoutNav() {
   };
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? customDarkTheme : lightTheme}>
-      <Stack initialRouteName='(auth)' screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(modal)" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <AtomProvider>
+      <ThemeProvider
+        value={colorScheme === "dark" ? customDarkTheme : lightTheme}
+      >
+        <Stack initialRouteName="(auth)" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(modal)" options={{ presentation: "modal" }} />
+        </Stack>
+        <Toast config={toastConfig} />
+      </ThemeProvider>
+    </AtomProvider>
   );
 }

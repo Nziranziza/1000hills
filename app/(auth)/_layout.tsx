@@ -53,7 +53,7 @@ export default function AuthLayout() {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 36,
+    fontSize: 32,
     marginBottom: 14,
     marginTop: 70,
     fontWeight: '500'
