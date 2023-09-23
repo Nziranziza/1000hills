@@ -23,14 +23,14 @@ export default function Button({
   ...props
 }: Props) {
   const _styles = useMemo(() => {
-    if (loading) {
+    if (loading || disabled) {
       return {
         ...styles.button,
         opacity: 0.5,
       };
     }
     return styles.button;
-  }, [loading]);
+  }, [loading, disabled]);
   
   return (
     <TouchableOpacity

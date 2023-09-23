@@ -16,7 +16,9 @@ const instance: AxiosInstance = axios.create({
 const responseHandler = (response: AxiosResponse) => response.data;
 const requestHandler = async (req: InternalAxiosRequestConfig) => {
   const token = await getToken();
-  req.headers.token = token;
+  if(token) {
+    req.headers.token = token;
+  }
   return req;
 };
 const errorHandler = (error: any) => {

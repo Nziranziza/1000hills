@@ -1,24 +1,32 @@
-import { StyleSheet, FlatList } from "react-native";
-import { faker } from '@faker-js/faker';
+import {
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  ActivityIndicator,
+} from "react-native";
 import { useRouter } from "expo-router";
+import { useInfiniteQuery } from "react-query";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { useState } from "react";
+import { range } from "lodash";
 
 import { Text } from "../../components/Themed";
 import Layout from "../../components/layout";
 import Card from "../../components/card";
-import Image from "../../components/image"
+import Image from "../../components/image";
 import Icon from "../../components/icons";
 import { View } from "../../components/Themed";
 import Button from "../../components/button";
+import PostAPI from "../../services/posts";
+import Loader from "../../components/placeholder";
+import { textColor } from "../../constants/Colors";
+import MediaViewer from "../../components/mediaViewer";
 
-
-const samples = Array.from({ length: 10 }).map(() => ({
-  id: new Date().getTime(),
-  title: faker.lorem.sentence(),
-  location: faker.lorem.words({ min: 1, max: 3 }),
-  description: faker.lorem.paragraphs(1),
-  likes: faker.number.int(1000),
-  date: faker.date.anytime(),
-}));
+type Media = {
+  url: string;
+  type: string;
+  _id: string;
+};
 
 export type FeedCardProps = {
   title: string;
@@ -26,17 +34,26 @@ export type FeedCardProps = {
   description: string;
   likes: number;
   date: Date;
-  media?: string;
+  media?: Media[];
 };
 
-export function FeedCard({ title, location, description }: FeedCardProps) {
+export function FeedCard({
+  title,
+  location,
+  description,
+  media,
+}: FeedCardProps) {
   return (
-    <Card style={styles.card}>
+    <Card style={styles.separator}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.location}>{location}</Text>
-      <Image source={{ uri: faker.image.urlPicsumPhotos() }} style={styles.image} />
+      <MediaViewer media={media} />
       <Text style={styles.description}>{description}</Text>
-      <View lightColor="transparent" darkColor="transparent" style={styles.action}>
+      <View
+        lightColor="transparent"
+        darkColor="transparent"
+        style={styles.action}
+      >
         <Icon style={styles.actionItem} name="heart" size={25} />
         <Icon style={styles.actionItem} name="chat" size={25} />
         <Icon style={styles.actionItem} name="send" size={25} />
@@ -46,32 +63,81 @@ export function FeedCard({ title, location, description }: FeedCardProps) {
 }
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+  const { isLoading, data, refetch, fetchNextPage, hasNextPage, isFetching } =
+    useInfiniteQuery(
+      "posts",
+      ({ pageParam = 1 }) => PostAPI.getAll({ page: pageParam }),
+      {
+        getNextPageParam: (lastPage) => {
+          if (lastPage.meta.page < lastPage.meta.totalPages) {
+            return lastPage.meta.page + 1;
+          }
+          return false;
+        },
+      }
+    );
 
   const onCreate = () => {
-    router.push("/(modal)")
-  }
+    router.push("/(modal)");
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
+  const onEndReached = async () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
 
   return (
     <Layout noScroll>
-      <FlatList
-        key={samples.length}
-        data={samples}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        renderItem={({
-          item: { title, location, description, likes, date },
-        }) => (
-          <FeedCard
-            title={title}
-            location={location}
-            description={description}
-            likes={likes}
-            date={date}
-          />
-        )}
-        style={styles.flatlist}
-      />
+      {isLoading || refreshing ? (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={range(0, 3)}
+          renderItem={() => <Loader style={styles.separator} />}
+        />
+      ) : (
+        <FlatList
+          data={data?.pages.map((page) => page.data).flat()}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          renderItem={({
+            item: { title, location, description, likes, date, assets },
+          }) => (
+            <FeedCard
+              title={title}
+              location={location}
+              description={description}
+              likes={likes}
+              date={date}
+              media={assets}
+            />
+          )}
+          style={styles.flatlist}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListFooterComponent={
+            <>
+              {isFetching ? (
+                <View style={styles.separator}>
+                  <ActivityIndicator color={textColor} />
+                </View>
+              ) : (
+                <></>
+              )}
+            </>
+          }
+          onEndReached={onEndReached}
+        />
+      )}
       <Button
         onPress={onCreate}
         style={styles.actionButton}
@@ -88,43 +154,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-  card: {
-    marginBottom: 15
+    marginBottom: 15,
   },
   title: {
-    fontWeight: '600'
+    fontWeight: "600",
   },
   location: {
-    fontSize: 10
+    fontSize: 10,
   },
   description: {
-    fontSize: 14
+    fontSize: 14,
   },
   image: {
-    width: '100%', 
-    height: 200,
-    marginVertical: 10
+    width: wp("100%") - 40 - 30 - 1,
+    minHeight: 200,
+    marginVertical: 10,
+    objectFit: "cover",
   },
   action: {
-    flexDirection: 'row',
-    marginTop: 10
+    flexDirection: "row",
+    marginTop: 10,
   },
   actionItem: {
-    marginRight: 10
+    marginRight: 10,
   },
   flatlist: {
-    flex: 1
+    flex: 1,
   },
   actionButton: {
-    position: 'absolute',
+    position: "absolute",
     height: 60,
     width: 60,
     borderRadius: 30,
     bottom: 10,
-    right: 0
-  }
+    right: 0,
+  },
 });
