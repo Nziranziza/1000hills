@@ -2,10 +2,9 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
-import { Video } from "expo-av";
+import { Video, ResizeMode } from "expo-av";
 import { FlatList } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { ResizeMode } from "expo-av";
 
 import { View, Text } from "./Themed";
 import Button from "./button";
@@ -20,10 +19,16 @@ import {
 } from "../constants/Colors";
 import { storage } from "../services/firebase";
 
+type UploadedItem = {
+  url: string;
+  type: "image" | "video"
+};
+
 type MediaProps = {
   item: any;
   onRemove?: () => void;
   upload?: boolean;
+  onError?: (message: string) => void;
   onChange?: (item: { url: string; type: "image" | "video" }) => void;
 };
 
@@ -47,6 +52,7 @@ const MediaItem = ({
   onRemove = () => {},
   upload = false,
   onChange = () => {},
+  onError = () => {}
 }: MediaProps) => {
   const [status, setStatus] = useState<UploadStatus>(UploadStatus.PENDING);
   const [progress, setProgress] = useState(0);
@@ -85,6 +91,7 @@ const MediaItem = ({
       },
       () => {
         setStatus(UploadStatus.FAILED);
+        onError('failed to upload')
       },
       async () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref);
@@ -154,13 +161,19 @@ const MediaItem = ({
 type MediaUploaderProps = {
   upload?: boolean;
   title: string;
-  onChange?: (items: any[]) => void;
+  onChange?: (items: any) => void;
+  error?: string[] | string;
+  onUploadSuccess?: (items: any[]) => void;
+  onUploadFailer?: (message: string) => void;
 };
 
 export default function MediaUploader({
   upload,
   title,
   onChange = () => {},
+  error,
+  onUploadSuccess = () => {},
+  onUploadFailer = () => {}
 }: MediaUploaderProps) {
   const [isSelecting, setIsSelecting] = useState(false);
   const [assets, setAssets] = useState<any[]>([]);
@@ -189,15 +202,27 @@ export default function MediaUploader({
     );
   };
 
-  const onChangeHandler = useCallback(() => {
-    onChange(results);
-  }, [results]);
 
   useEffect(() => {
     if (results.length && results.length === assets.length) {
-      onChangeHandler();
+      onUploadSuccess(results);
     }
   }, [results, assets]);
+
+  useEffect(() => {
+    onChange(assets.map((asset) => ({
+      url: asset.uri,
+      type: asset.type
+    })))
+  }, [assets])
+
+  const onErrorHandler = () => {
+    onUploadFailer('One or more media failed to upload');
+  }
+
+  const onChangeHandler = (item: UploadedItem) => {
+    setResults(results => [...results, item])
+  }
 
   return (
     <View>
@@ -216,6 +241,8 @@ export default function MediaUploader({
               item={item}
               onRemove={() => onRemove(itemIdex)}
               upload={upload}
+              onError={onErrorHandler}
+              onChange={onChangeHandler}
             />
           )}
           keyExtractor={(item, index) => `${item.assetId}-${index}`}
@@ -242,12 +269,14 @@ export default function MediaUploader({
                     />
                   }
                   onPress={openFileSelector}
+                  disabled={upload}
                 />
               </View>
             )
           }
         />
       )}
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 }
@@ -313,5 +342,10 @@ const styles = StyleSheet.create({
     backgroundColor: primaryColor,
     width: "0%",
     bottom: 0,
+  },
+  error: {
+    fontSize: 12,
+    marginTop: 5,
+    color: secondaryColor,
   },
 });

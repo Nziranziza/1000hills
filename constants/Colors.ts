@@ -5,6 +5,7 @@ export const backgroundColor = '#F5F5F5';
 export const darkGrayColor = '#B5B5B5';
 export const grayColor = '#CCCCCC';
 export const whiteColor = '#FFF'
+export const blackColor = "#000"
 
 export default {
   light: {

@@ -7,9 +7,9 @@ export type Props = TouchableOpacityProps & {};
 
 export default function Card({ children, style, ...props }: ViewProps) {
   return (
-    <TouchableOpacity style={[styles.container, style]} {...props}>
+    <View style={[styles.container, style]} {...props}>
       {children}
-    </TouchableOpacity>
+    </View>
   );
 }
 

@@ -9,14 +9,19 @@ import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 import { Provider as AtomProvider } from "jotai";
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 
-export {
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
-import Colors, { grayColor, primaryColor, secondaryColor, whiteColor } from "../constants/Colors";
+import Colors, {
+  grayColor,
+  primaryColor,
+  secondaryColor,
+  whiteColor,
+} from "../constants/Colors";
 
+const queryClient = new QueryClient();
 
 export const unstable_settings = {
   initialRouteName: "(auth)",
@@ -32,26 +37,29 @@ const toastConfig = {
       contentContainerStyle={{ paddingHorizontal: 15 }}
       text1Style={{
         color: whiteColor,
-        fontSize: 18
+        fontSize: 18,
       }}
       text2Style={{
         color: whiteColor,
-        fontSize: 14
+        fontSize: 14,
       }}
     />
   ),
   error: (props: any) => (
     <ErrorToast
       {...props}
-      style={{ borderLeftColor: secondaryColor, backgroundColor: secondaryColor }}
+      style={{
+        borderLeftColor: secondaryColor,
+        backgroundColor: secondaryColor,
+      }}
       contentContainerStyle={{ paddingHorizontal: 15 }}
       text1Style={{
         color: whiteColor,
-        fontSize: 18
+        fontSize: 18,
       }}
       text2Style={{
         color: whiteColor,
-        fontSize: 14
+        fontSize: 14,
       }}
     />
   ),
@@ -113,12 +121,17 @@ function RootLayoutNav() {
       <ThemeProvider
         value={colorScheme === "dark" ? customDarkTheme : lightTheme}
       >
-        <Stack initialRouteName="(auth)" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(modal)" options={{ presentation: "modal" }} />
-        </Stack>
-        <Toast config={toastConfig} />
+        <QueryClientProvider client={queryClient}>
+          <Stack
+            initialRouteName="(auth)"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(modal)" options={{ presentation: "modal" }} />
+          </Stack>
+          <Toast config={toastConfig} />
+        </QueryClientProvider>
       </ThemeProvider>
     </AtomProvider>
   );

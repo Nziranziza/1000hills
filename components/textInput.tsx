@@ -30,7 +30,7 @@ export default function Input({
   containerStyle,
   label,
   multiline,
-  numberOfLines,
+  numberOfLines, 
   ...props
 }: InputProps) {
   const [isFocused, setFocus] = useState<Boolean>(false);

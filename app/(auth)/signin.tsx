@@ -37,7 +37,6 @@ export default function Signin() {
         resetForm()
       },
       onError: (message: string) => {
-        console.log(message)
         Toast.show({
           type: 'error',
           text1: 'Login failed!',
