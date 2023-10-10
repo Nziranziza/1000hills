@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import {
-  ScrollView,
   StyleSheet,
-  View,
   ViewStyle,
 } from "react-native";
+
+import { View, ScrollView } from "./Themed";
 
 export type LayoutProps = {
   children: ReactNode;

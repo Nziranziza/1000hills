@@ -11,13 +11,14 @@ import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 import Input from "../../components/textInput";
 import Layout from "../../components/layout";
 import Button from "../../components/button";
 import MediaUploader from "../../components/mediaUploader";
 import PostAPI, { PostBody } from "../../services/posts";
-import { useRouter } from "expo-router";
+
 
 const isOS = Platform.OS === "ios";
 

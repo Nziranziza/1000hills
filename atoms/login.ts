@@ -35,7 +35,6 @@ const login = atom(
       const response = await AuthAPI.login(body);
       set(loginAtom, {
         ...currentData,
-        loading: false,
         error: null,
         data: response,
       });
@@ -43,13 +42,17 @@ const login = atom(
     } catch (error: any) {
       const { onError = () => {} } = payload;
       const currentData: any = get(loginAtom);
-      console.log(error)
       set(loginAtom, {
         ...currentData,
-        loading: false,
         error,
       });
       onError(error?.message as string || 'Something went wrong!');
+    } finally {
+      const currentData: any = get(loginAtom);
+      set(loginAtom, {
+        ...currentData,
+        loading: false,
+      });
     }
   }
 );
@@ -65,7 +68,6 @@ export const logout = atom(
         ...currentData,
         data: {},
       });
-      console.log('done')
     } catch(error) {
       const currentData: any = get(loginAtom);
       set(loginAtom, {

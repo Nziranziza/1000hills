@@ -1,4 +1,4 @@
-import { ViewProps, StyleSheet, TouchableOpacity, TouchableOpacityProps } from "react-native";
+import { ViewProps, StyleSheet, TouchableOpacityProps } from "react-native";
 
 import { View } from "./Themed";
 import { grayColor, whiteColor } from "../constants/Colors";

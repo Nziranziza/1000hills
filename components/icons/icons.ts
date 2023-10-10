@@ -14,6 +14,11 @@ import upload from "./xml/upload";
 import x from './xml/x';
 import refresh from "./xml/refresh";
 import chevronBack from "./xml/chevron-back";
+import info from "./xml/info";
+import message from "./xml/message";
+import document from "./xml/document";
+import lock from "./xml/lock";
+import edit from "./xml/edit";
 
 const icons = {
   home,
@@ -31,7 +36,12 @@ const icons = {
   upload,
   x,
   refresh,
-  chevronBack
+  chevronBack,
+  info,
+  message,
+  document,
+  lock,
+  edit
 };
 
 export type IconNames = keyof typeof icons;

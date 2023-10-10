@@ -129,6 +129,7 @@ function RootLayoutNav() {
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(modal)" options={{ presentation: "modal" }} />
+            <Stack.Screen name="settings" options={{ presentation: "modal", title: "Settings", headerShown: true }} />
           </Stack>
           <Toast config={toastConfig} />
         </QueryClientProvider>
