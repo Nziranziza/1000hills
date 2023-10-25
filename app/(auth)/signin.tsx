@@ -69,6 +69,8 @@ export default function Signin() {
               onBlur={handleBlur("email")}
               error={errors.email}
               autoCapitalize="none"
+              editable={!loading}
+              selectTextOnFocus={!loading}
             />
             <Input
               placeholder="Password"
@@ -78,10 +80,12 @@ export default function Signin() {
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
               error={errors.password}
+              editable={!loading}
+              selectTextOnFocus={!loading}
             />
             <Button
-              loading={loading}
               title="Sign In"
+              loading={loading}
               onPress={() => handleSubmit()}
             />
           </>

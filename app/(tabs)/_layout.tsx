@@ -1,14 +1,20 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
+
 import Icon, { IconNames } from "../../components/icons";
 
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
 function TabBarIcon(props: { name: IconNames; color: string }) {
   return <Icon size={20} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
+
+  const router = useRouter();
+
+  const onSettingsPress = () => {
+    router.push("/settings")
+  }
+
   return (
     <Tabs
       initialRouteName="index"
@@ -16,8 +22,17 @@ export default function TabLayout() {
         tabBarShowLabel: false,
         headerShadowVisible: false,
         headerTitle: "",
-        headerLeft: () => <Icon name="logo" size={40} style={{ marginLeft: 30 }} />,
-        headerRight: () => <Icon name="settings" style={{ marginRight: 30 }} />,
+        headerLeft: () => (
+          <Icon name="logo" size={30} style={{ marginLeft: 20 }} />
+        ),
+        headerRight: () => (
+          <TouchableOpacity style={{ marginRight: 20 }} onPress={onSettingsPress}>
+            <Icon name="settings"  />
+          </TouchableOpacity>
+        ),
+        headerStyle: {
+          height: 75,
+        },
       }}
     >
       <Tabs.Screen

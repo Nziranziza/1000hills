@@ -13,7 +13,6 @@ import { range } from "lodash";
 import { Text } from "../../components/Themed";
 import Layout from "../../components/layout";
 import Card from "../../components/card";
-import Image from "../../components/image";
 import Icon from "../../components/icons";
 import { View } from "../../components/Themed";
 import Button from "../../components/button";

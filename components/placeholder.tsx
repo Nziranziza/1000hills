@@ -1,4 +1,4 @@
-import { Placeholder, PlaceholderLine, Fade } from "rn-placeholder";
+import { Placeholder, PlaceholderLine, Fade, PlaceholderMedia } from "rn-placeholder";
 import { View } from "react-native";
 import { StyleSheet } from "react-native";
 
@@ -12,14 +12,14 @@ export default function Loader(props: any) {
         style={{ marginBottom: 0, paddingBottom: 0 }}
         Animation={Fade}
       >
-        <PlaceholderLine style={styles.background} width={70} />
+        <PlaceholderLine color={grayColor} width={70} />
         <PlaceholderLine style={styles.card} />
         <View style={{ flexDirection: "row" }}>
-          <PlaceholderLine style={[styles.button, styles.background]} />
+          <PlaceholderMedia size={35} isRound />
           <View style={styles.separator} />
-          <PlaceholderLine style={[styles.button, styles.background]} />
+          <PlaceholderMedia size={35} isRound />
           <View style={styles.separator} />
-          <PlaceholderLine style={[styles.button, styles.background]} />
+          <PlaceholderMedia size={35} isRound />
         </View>
       </Placeholder>
     </Card>
@@ -27,19 +27,10 @@ export default function Loader(props: any) {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    height: 35,
-    width: 35,
-    borderRadius: 35,
-    marginBottom: 0
-  },
   card: {
     height: 200,
   },
   separator: {
     width: 10,
-  },
-  background: {
-    backgroundColor: grayColor,
-  },
+  }
 });
